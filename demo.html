@@ -1,0 +1,90 @@
+<head>
+<script type='text/javascript'>
+window.onload=function(){
+function draw(des,data,style,options) {  
+  var ctx = document.getElementById(des).getContext('2d');  
+  var ctx_width=document.getElementById(des).width;
+  var ctx_height=document.getElementById(des).height;
+  var margin=.95; var text_margin=.03; var text_line=.01;var text_left=.01;
+  var xParts=(ctx_width*margin)/(options.maxX-options.minX);
+  var yParts=(ctx_height*margin)/(options.maxY-options.minY);
+  var left_margin=ctx_width*(1-margin);
+  var bottom_margin=ctx_height*margin;
+
+  ctx.moveTo(ctx_width*(1-margin),ctx_height*(1-margin));
+    ctx.lineTo(ctx_width*(1-margin),ctx_height*margin);
+  ctx.lineTo(ctx_width*margin,ctx_height*margin);
+  ctx.stroke();
+
+var xMaxLength=ctx_width*margin;
+var yMaxLength=ctx_height*margin;
+
+var xTextPlace=ctx_width*(1-margin);
+var yTextPlace=ctx_height*margin;
+var xText=options.minX;
+var yText=options.minY;
+//Y part
+do{
+  ctx.moveTo(xTextPlace,yTextPlace);
+  ctx.lineTo(xTextPlace-ctx_width*text_line,yTextPlace);
+    if(options.xGrid)
+  {
+  ctx.lineTo(xMaxLength,yTextPlace);
+  }
+  ctx.stroke();
+  ctx.fillText(yText, xTextPlace-ctx_height*text_margin,yTextPlace); 
+  yTextPlace-=options.bigPart*yParts;
+  yText+=options.bigPart;
+}
+while(yTextPlace>=yParts-yMaxLength)
+
+var xTextPlace=ctx_width*(1-margin);
+var yTextPlace=ctx_height*margin;
+var xText=options.minX;
+var yText=options.minY;
+//X part
+do{
+  ctx.moveTo(xTextPlace,yTextPlace);
+  ctx.lineTo(xTextPlace,yTextPlace+ctx_height*text_line);
+  if(options.yGrid)
+  {
+  ctx.lineTo(xTextPlace,yParts-yMaxLength);
+  }
+  ctx.stroke();
+  ctx.fillText(xText, xTextPlace-ctx_width*text_left,ctx_height*margin+ctx_height*text_margin); 
+  xTextPlace+=options.bigPart*xParts;
+  xText+=options.bigPart;
+}
+while(xTextPlace<=xMaxLength)
+
+
+
+
+
+  ctx.moveTo(left_margin+xParts*(data[0][0]-options.minX),ctx_height*margin-(data[0][1]-options.minY)*yParts);
+  for(var i=1;i<data.length;i++)
+  {
+  ctx.lineTo(left_margin+xParts*(data[i][0]-options.minX),ctx_height*margin-(data[i][1]-options.minY)*yParts);
+  }
+  ctx.stroke();
+
+} 
+draw("canvas",[[10,200],[50,30],[200,100],[250,110],[300,200],[500,400]],"line",{
+minX:10,
+minY:10,
+maxX:700,
+maxY:1000,
+bigPart:50,
+smallPart:10,
+xGrid:false,
+yGrid:true
+}) ;
+}
+</script>
+<style type='text/css'>
+canvas{
+border:1px green solid;}
+</style>
+</head>
+<canvas width='600' height='600' id='canvas'>
+</canvas>
