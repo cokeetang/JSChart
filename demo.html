@@ -1,8 +1,153 @@
 <head>
 <script type='text/javascript'>
 window.onload=function(){
+
+function drawSmartArrow(c,x0,y0,x,y,radius,color)
+{
+//ÖÇÄÜ¼ýÍ·£»
+c.save();
+c.strokeStyle=color;
+if(y0>y)
+var gradient=Math.atan((x-x0)/(y0-y));
+else
+var gradient=Math.atan((y-y0)/(x-x0));
+
+var gradient_1=gradient-Math.PI/6;
+var gradient_2=gradient+Math.PI/6;
+
+if(y0>y)
+{
+var p1=[x-radius*Math.sin(gradient_1),y+radius*Math.cos(gradient_1)];
+var p2=[x-radius*Math.sin(gradient_2),y+radius*Math.cos(gradient_2)];
+}
+else
+{
+var p1=[x-radius*Math.cos(gradient_1),y-radius*Math.sin(gradient_1)];
+var p2=[x-radius*Math.cos(gradient_2),y-radius*Math.sin(gradient_2)];
+}
+c.beginPath();
+c.moveTo(p1[0],p1[1]);
+c.lineTo(x,y);
+c.lineTo(p2[0],p2[1]);
+c.stroke();
+c.restore();
+}
+function drawCircle(c,x,y,radius,color,fill)
+{
+//c.beginPath();
+if(!fill)
+c.strokeStyle=color;
+else
+c.fillStyle=color;
+c.arc(x,y,radius,0,Math.PI*2,true);
+if(fill)
+c.fill();
+else
+c.stroke();
+//c.closePath();
+}
+function drawTriangle(c,x,y,side,color,fill)
+{
+//c.beginPath();
+if(!fill)
+c.strokeStyle=color;
+else
+c.fillStyle=color;
+var p1=[x,y-Math.pow(3,1/2)/3*side];
+var p2=[x-side/2,y+Math.pow(3,1/2)/6*side];
+var p3=[x+side/2,y+Math.pow(3,1/2)/6*side];
+c.beginPath();
+c.moveTo(p1[0],p1[1]);
+c.lineTo(p2[0],p2[1]);
+c.lineTo(p3[0],p3[1]);
+c.closePath();
+if(fill)
+c.fill();
+else
+c.stroke();
+//c.closePath();
+}
+function drawFive(c,x,y,side,color,fill)
+{
+//c.beginPath();
+if(!fill)
+c.strokeStyle=color;
+else
+c.fillStyle=color;
+var x_add=Math.sin(Math.PI*2/5)*side;
+var x_add2=Math.sin(Math.PI*2/10)*side;
+var y_add=Math.cos(Math.PI*2/5)*side;
+var y_add2=Math.cos(Math.PI*2/10)*side;
+var p1=[x-x_add,y-y_add];
+var p2=[x+x_add,y-y_add];
+var p3=[x-x_add2,y+y_add2];
+var p4=[x,y-side];
+var p5=[x+x_add2,y+y_add2];
+c.beginPath();
+c.moveTo(p1[0],p1[1]);
+c.lineTo(p2[0],p2[1]);
+c.lineTo(p3[0],p3[1]);
+c.lineTo(p4[0],p4[1]);
+c.lineTo(p5[0],p5[1]);
+c.closePath();
+if(fill)
+c.fill();
+else
+c.stroke();
+//c.closePath();
+}
+
+
+function drwaPlus(c,x,y,side,color)
+{
+c.strokeStyle=color;
+c.save();
+//c.lineWidth=.5;
+p1=[x-side,y];
+p2=[x+side,y];
+p3=[x,y-side];
+p4=[x,y+side];
+c.beginPath();
+c.moveTo(p1[0],p1[1]);
+c.lineTo(p2[0],p2[1]);
+c.closePath();
+c.stroke();
+c.beginPath();
+c.moveTo(p3[0],p3[1]);
+c.lineTo(p4[0],p4[1]);
+c.closePath();
+c.stroke();
+c.restore();
+}
+function drwaCross(c,x,y,side,color)
+{
+c.strokeStyle=color;
+c.save();
+//c.lineWidth=.5;
+var add=(Math.pow(2,1/2)/2)*side;
+p1=[x-add,y-add];
+p2=[x+add,y+add];
+p3=[x-add,y+add];
+p4=[x+add,y-side];
+c.beginPath();
+c.moveTo(p1[0],p1[1]);
+c.lineTo(p2[0],p2[1]);
+c.closePath();
+c.stroke();
+c.beginPath();
+c.moveTo(p3[0],p3[1]);
+c.lineTo(p4[0],p4[1]);
+c.closePath();
+c.stroke();
+c.restore();
+}
+
 function draw(des,data,style,options) {  
+
   var ctx = document.getElementById(des).getContext('2d');  
+ 
+ 
+
   var ctx_width=document.getElementById(des).width;
   var ctx_height=document.getElementById(des).height;
   var margin=.95; var text_margin=.03; var text_line=.01;var text_left=.01;
@@ -10,7 +155,7 @@ function draw(des,data,style,options) {
   var yParts=(ctx_height*margin)/(options.maxY-options.minY);
   var left_margin=ctx_width*(1-margin);
   var bottom_margin=ctx_height*margin;
-
+ctx.beginPath(); 
   ctx.moveTo(ctx_width*(1-margin),ctx_height*(1-margin));
     ctx.lineTo(ctx_width*(1-margin),ctx_height*margin);
   ctx.lineTo(ctx_width*margin,ctx_height*margin);
@@ -23,12 +168,17 @@ var xTextPlace=ctx_width*(1-margin);
 var yTextPlace=ctx_height*margin;
 var xText=options.minX;
 var yText=options.minY;
+ctx.save();
+ ctx.lineWidth=0.2;
+ ctx.strokeStyle="rgba(255,16,0,.1)";
 //Y part
 do{
   ctx.moveTo(xTextPlace,yTextPlace);
+ 
   ctx.lineTo(xTextPlace-ctx_width*text_line,yTextPlace);
     if(options.xGrid)
   {
+ 
   ctx.lineTo(xMaxLength,yTextPlace);
   }
   ctx.stroke();
@@ -36,7 +186,7 @@ do{
   yTextPlace-=options.bigPart*yParts;
   yText+=options.bigPart;
 }
-while(yTextPlace>=yParts-yMaxLength)
+while(yTextPlace>=ctx_height-yMaxLength);
 
 var xTextPlace=ctx_width*(1-margin);
 var yTextPlace=ctx_height*margin;
@@ -55,28 +205,95 @@ do{
   xTextPlace+=options.bigPart*xParts;
   xText+=options.bigPart;
 }
-while(xTextPlace<=xMaxLength)
+while(xTextPlace<=xMaxLength);
+// draw lines
+ctx.closePath();
 
+ctx.restore();
+for(var j=0;j<data.length;j++)
+{
 
-
-
-
-  ctx.moveTo(left_margin+xParts*(data[0][0]-options.minX),ctx_height*margin-(data[0][1]-options.minY)*yParts);
-  for(var i=1;i<data.length;i++)
+  ctx.beginPath();
+  ctx.strokeStyle=data[j].lineColor;
+  ctx.moveTo(left_margin+xParts*(data[j].data[0][0]-options.minX),ctx_height*margin-(data[j].data[0][1]-options.minY)*yParts);
+  for(var i=1;i<data[j].data.length;i++)
   {
-  ctx.lineTo(left_margin+xParts*(data[i][0]-options.minX),ctx_height*margin-(data[i][1]-options.minY)*yParts);
+  //drawCircle(c,x,y,radius,color);
+   
+  var x=left_margin+xParts*(data[j].data[i][0]-options.minX);
+  var y=ctx_height*margin-(data[j].data[i][1]-options.minY)*yParts;
+ // ctx.moveTo(x_beofre,y_before);
+  ctx.lineTo(x,y);
   }
   ctx.stroke();
+}
+ //  drawCircle(ctx,x,y,data[j].stressPoint.radius,data[j].stressPoint.color);
+for(var j=0;j<data.length;j++)
+{
+  ctx.beginPath();
+ // ctx.moveTo(left_margin+xParts*(data[j].data[0][0]-options.minX),ctx_height*margin-(data[j].data[0][1]-options.minY)*yParts);
+  for(var i=0;i<data[j].data.length;i++)
+  {
+  ctx.beginPath();
+  var x=left_margin+xParts*(data[j].data[i][0]-options.minX);
+  var y=ctx_height*margin-(data[j].data[i][1]-options.minY)*yParts;
+  switch(data[j].stressPoint.style)
+  {
+  case "circle":
+  drawCircle(ctx,x,y,data[j].stressPoint.radius,data[j].stressPoint.color,data[j].stressPoint.fill);
+  break;
+  case "triangle":
+  drawTriangle(ctx,x,y,10,"red",data[j].stressPoint.fill);
+   break;
+  case "plus":
+   drwaPlus(ctx,x,y,data[j].stressPoint.radius,data[j].stressPoint.color);
+ break;
+  case "cross":
+    drwaCross(ctx,x,y,data[j].stressPoint.radius,data[j].stressPoint.color);
+	 break;
+  case "five":
+  drawFive(ctx,x,y,data[j].stressPoint.radius,data[j].stressPoint.color,data[j].stressPoint.fill);
+  break;
+  case "smartArrow":
+  if(i>0)
+  {
+  var x0=left_margin+xParts*(data[j].data[i-1][0]-options.minX);
+  var y0=ctx_height*margin-(data[j].data[i-1][1]-options.minY)*yParts;
+  }
+  drawSmartArrow(ctx,x0,y0,x,y,data[j].stressPoint.radius,data[j].stressPoint.color);
+  break;
+}
+  }
+  
+}
+
+
 
 } 
-draw("canvas",[[10,200],[50,30],[200,100],[250,110],[300,200],[500,400]],"line",{
+draw("canvas",
+[
+{
+data:[[10,200],[50,30],[200,100],[250,110],[300,200],[500,400]],
+lineColor:"red",
+stressPoint:{style:"five",radius:10,color:"blue",fill:true}
+},
+{data:[[10,230],[50,300],[200,150],[250,860],[300,550],[500,300],[600,900],[650,300]],
+lineColor:"green",
+stressPoint:{style:"smartArrow",radius:20,color:"red"}
+}
+,
+{data:[[10,290],[100,600],[150,100],[250,660],[300,250],[500,600],[600,300],[650,100]],
+lineColor:"blue",
+stressPoint:{style:"circle",radius:5,color:"red",fill:true}
+}
+],"line",{
 minX:10,
 minY:10,
 maxX:700,
 maxY:1000,
 bigPart:50,
 smallPart:10,
-xGrid:false,
+xGrid:true,
 yGrid:true
 }) ;
 }
