@@ -1,9 +1,22 @@
 <head>
+	<!--[if IE]><script type="text/javascript" src="excanvas.js"></script><![endif]-->
+
 <script type='text/javascript'>
 window.onload=function(){
 
+function dataFunX(data){
+//data=[[1,2],[3,4]];
+return data;
+}
+
+function dataFunY(data){
+//data=[[1,2],[3,4]];
+return data;
+}
+
 function drawSmartArrow(c,x0,y0,x,y,radius,color)
 {
+
 //ÖÇÄÜ¼ýÍ·£»
 c.save();
 c.strokeStyle=color;
@@ -17,15 +30,18 @@ var gradient_2=gradient+Math.PI/6;
 
 if(y0>y)
 {
+
 var p1=[x-radius*Math.sin(gradient_1),y+radius*Math.cos(gradient_1)];
 var p2=[x-radius*Math.sin(gradient_2),y+radius*Math.cos(gradient_2)];
 }
 else
 {
+
 var p1=[x-radius*Math.cos(gradient_1),y-radius*Math.sin(gradient_1)];
 var p2=[x-radius*Math.cos(gradient_2),y-radius*Math.sin(gradient_2)];
 }
 c.beginPath();
+
 c.moveTo(p1[0],p1[1]);
 c.lineTo(x,y);
 c.lineTo(p2[0],p2[1]);
@@ -142,12 +158,9 @@ c.stroke();
 c.restore();
 }
 
-function draw(des,data,style,options) {  
-
+ 
+function barChart(des,data,options){
   var ctx = document.getElementById(des).getContext('2d');  
- 
- 
-
   var ctx_width=document.getElementById(des).width;
   var ctx_height=document.getElementById(des).height;
   var margin=.95; var text_margin=.03; var text_line=.01;var text_left=.01;
@@ -155,15 +168,43 @@ function draw(des,data,style,options) {
   var yParts=(ctx_height*margin)/(options.maxY-options.minY);
   var left_margin=ctx_width*(1-margin);
   var bottom_margin=ctx_height*margin;
+ drawCoo(ctx,ctx_width,ctx_height,margin,text_line,text_margin,text_left,xParts,yParts,options);
+//draw
+ var width=options.bigPart/3;
+for(var j=0;j<data.length;j++)
+{
+  ctx.strokeStyle=data[j].strokeColor;
+  ctx.fillStyle=data[j].fillColor;
+  for(var i=0;i<data[j].data.length;i++)
+  {
+    ctx.beginPath();
+  //drawCircle(c,x,y,radius,color);
+  var x=left_margin+xParts*(data[j].data[i][0]-options.minX)-width/2;
+  var y=ctx_height*margin-(data[j].data[i][1]-options.minY)*yParts;
+var  height=(data[j].data[i][1]-options.minY)*yParts;
+ // ctx.moveTo(x_beofre,y_before);
+
+ ctx.moveTo(x,y);
+ctx.fillRect(x,y,width,height);
+//ctx.strokeRect(x,y,width,height);
+// ctx.lineTo(x,ctx_height*margin);
+ctx.stroke();
+  }
+ 
+}
+//draw
+}
+
+
+function drawCoo(ctx,ctx_width,ctx_height,margin,text_line,text_margin,text_left,xParts,yParts,options){
+//var margin=.95; var text_margin=.03; var text_line=.01;var text_left=.01;
 ctx.beginPath(); 
   ctx.moveTo(ctx_width*(1-margin),ctx_height*(1-margin));
     ctx.lineTo(ctx_width*(1-margin),ctx_height*margin);
   ctx.lineTo(ctx_width*margin,ctx_height*margin);
   ctx.stroke();
-
 var xMaxLength=ctx_width*margin;
 var yMaxLength=ctx_height*margin;
-
 var xTextPlace=ctx_width*(1-margin);
 var yTextPlace=ctx_height*margin;
 var xText=options.minX;
@@ -172,22 +213,21 @@ ctx.save();
  ctx.lineWidth=0.2;
  ctx.strokeStyle="rgba(255,16,0,.1)";
 //Y part
+
 do{
   ctx.moveTo(xTextPlace,yTextPlace);
- 
   ctx.lineTo(xTextPlace-ctx_width*text_line,yTextPlace);
     if(options.xGrid)
   {
- 
   ctx.lineTo(xMaxLength,yTextPlace);
   }
   ctx.stroke();
-  ctx.fillText(yText, xTextPlace-ctx_height*text_margin,yTextPlace); 
+  ctx.fillText(options.dataFunY(yText), xTextPlace-ctx_height*text_margin,yTextPlace); 
   yTextPlace-=options.bigPart*yParts;
   yText+=options.bigPart;
+ 
 }
 while(yTextPlace>=ctx_height-yMaxLength);
-
 var xTextPlace=ctx_width*(1-margin);
 var yTextPlace=ctx_height*margin;
 var xText=options.minX;
@@ -201,15 +241,26 @@ do{
   ctx.lineTo(xTextPlace,yParts-yMaxLength);
   }
   ctx.stroke();
-  ctx.fillText(xText, xTextPlace-ctx_width*text_left,ctx_height*margin+ctx_height*text_margin); 
+  ctx.fillText(options.dataFunX(xText), xTextPlace-ctx_width*text_left,ctx_height*margin+ctx_height*text_margin); 
   xTextPlace+=options.bigPart*xParts;
   xText+=options.bigPart;
 }
 while(xTextPlace<=xMaxLength);
 // draw lines
 ctx.closePath();
-
 ctx.restore();
+}
+
+function lineChart(des,data,options) {  
+  var ctx = document.getElementById(des).getContext('2d');  
+  var ctx_width=document.getElementById(des).width;
+  var ctx_height=document.getElementById(des).height;
+  var margin=.95; var text_margin=.03; var text_line=.01;var text_left=.01;
+  var xParts=(ctx_width*margin)/(options.maxX-options.minX);
+  var yParts=(ctx_height*margin)/(options.maxY-options.minY);
+  var left_margin=ctx_width*(1-margin);
+  var bottom_margin=ctx_height*margin;
+ drawCoo(ctx,ctx_width,ctx_height,margin,text_line,text_margin,text_left,xParts,yParts,options);
 for(var j=0;j<data.length;j++)
 {
 
@@ -259,8 +310,10 @@ for(var j=0;j<data.length;j++)
   {
   var x0=left_margin+xParts*(data[j].data[i-1][0]-options.minX);
   var y0=ctx_height*margin-(data[j].data[i-1][1]-options.minY)*yParts;
+    drawSmartArrow(ctx,x0,y0,x,y,data[j].stressPoint.radius,data[j].stressPoint.color);
+
   }
-  drawSmartArrow(ctx,x0,y0,x,y,data[j].stressPoint.radius,data[j].stressPoint.color);
+
   break;
 }
   }
@@ -270,31 +323,92 @@ for(var j=0;j<data.length;j++)
 
 
 } 
-draw("canvas",
+function pieChart(des,data,options){
+var ctx = document.getElementById(des).getContext('2d');  
+var ctx_width=document.getElementById(des).width;
+var ctx_height=document.getElementById(des).height;
+
+ctx.translate(ctx_width/2, ctx_height/2);
+//draw title;
+var titleWidth=options.title.length*5;
+ctx.save();
+ctx.font = "10px Arial";
+ctx.fillText(options.title,-titleWidth/2,-options.width*4/7);
+//draw title;
+ctx.restore();
+var dataSum=0;
+for(var i=0;i<data[0].data.length;i++)
+{
+dataSum+=data[0].data[i][1];
+}
+var end=0;
+var begin=0;
+for(var i=0;i<data[0].data.length;i++)
+{
+ctx.save();
+ctx.fillStyle=data[0].parts[i].color;
+ctx.beginPath(); 
+if(i==0)
+{
+begin=0;
+end=-Math.PI*2*data[0].data[i][1]/dataSum;
+}
+else
+{
+begin=begin-Math.PI*2*data[0].data[i-1][1]/dataSum;
+end=begin-Math.PI*2*data[0].data[i][1]/dataSum;
+}
+//alert(Math.PI*2*data[0].data[i][1]/dataSum);
+
+var angle=end-begin;
+var outAngle=angle/2+begin;
+var outPoint=[];
+var textPoint=[];
+if(data[0].parts[i].out)
+{
+outPoint=[Math.cos(outAngle)*options.width/8,Math.sin(outAngle)*options.width/8];
+textPoint=[Math.cos(outAngle)*options.width*3/8,Math.sin(outAngle)*options.width*3/8];
+}
+else
+{
+outPoint=[0,0];
+textPoint=[Math.cos(outAngle)*options.width/4,Math.sin(outAngle)*options.width/4];
+}
+ctx.moveTo(outPoint[0],outPoint[1]);
+ctx.arc(outPoint[0],outPoint[1], options.width/2,begin,end,true);
+ctx.lineTo(outPoint[0],outPoint[1]);
+ctx.fill(); 
+//ctx.stroke(); 
+ctx.save();
+ctx.fillStyle="white";
+ctx.fillText(data[0].data[i][0]+"."+data[0].data[i][1],textPoint[0],textPoint[1]);
+ctx.restore();
+ctx.restore();
+
+}
+}
+pieChart("canvas",
 [
 {
-data:[[10,200],[50,30],[200,100],[250,110],[300,200],[500,400]],
-lineColor:"red",
+data:[["Jan",100],["Feb",200],["Fif",180],["Sep",110],["Aug",400],["Oct",100]],
+parts:[
+{color:"red"},
+{color:"blue"},
+{color:"green"},
+{color:"black",
+out:true},
+{color:"blue"},
+{color:"green",
+out:true},
+],
+strokeColor:"black",
+fillColor:"blue",
 stressPoint:{style:"five",radius:10,color:"blue",fill:true}
-},
-{data:[[10,230],[50,300],[200,150],[250,860],[300,550],[500,300],[600,900],[650,300]],
-lineColor:"green",
-stressPoint:{style:"smartArrow",radius:20,color:"red"}
 }
-,
-{data:[[10,290],[100,600],[150,100],[250,660],[300,250],[500,600],[600,300],[650,100]],
-lineColor:"blue",
-stressPoint:{style:"circle",radius:5,color:"red",fill:true}
-}
-],"line",{
-minX:10,
-minY:10,
-maxX:700,
-maxY:1000,
-bigPart:50,
-smallPart:10,
-xGrid:true,
-yGrid:true
+],{
+width:300,
+margin:10,
+title:"Hello world JSBarChart",
 }) ;
 }
 </script>
